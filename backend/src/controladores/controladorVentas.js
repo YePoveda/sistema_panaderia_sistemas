@@ -1,9 +1,8 @@
-// Registrar una venta (Simulación de Transacción ACID)
+// Un mini ACID
 export const registrarVenta = async (req, res) => {
   try {
     const { items, metodo_pago, total, id_cajero } = req.body;
 
-    // Validación básica de datos de entrada
     if (!items || items.length === 0 || !metodo_pago || !total) {
       return res.status(400).json({
         success: false,
@@ -11,7 +10,6 @@ export const registrarVenta = async (req, res) => {
       });
     }
 
-    // Aquí irá el START TRANSACTION / COMMIT / ROLLBACK con MySQL
     console.log(`[VENTA SIMULADA] Registrando venta por $${total} - Método: ${metodo_pago}`);
 
     res.status(201).json({
@@ -29,7 +27,7 @@ export const registrarVenta = async (req, res) => {
   }
 };
 
-// Resumen del cierre del día (Requerimiento Administrador)
+
 export const getReporteDiario = async (req, res) => {
   try {
     res.json({
