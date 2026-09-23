@@ -1,44 +1,67 @@
-const productosMock = [
-    {id: 1, nombre: 'Pan hojaldrado', precio: 500, stock: 30, dias_vencimiento: 4, unidad: 'unidad'},
-    {id: 2, nombre: 'Pan de molde', precio: 600, stock: 20, dias_vencimiento: 5, unidad: 'unidad'},
-    {id: 3, nombre: 'Pan cuadrado', precio: 500, stock: 30, dias_vencimiento: 3, unidad: 'unidad'},
-    {id: 4, nombre: 'Pan integral', precio: 700, stock: 15, dias_vencimiento: 6, unidad: 'unidad'},
-];
+import { pool } from '../config/db.js';
 
 export const getProductos = async (req, res) => {
-    try {
-        res.json(
-            {
-                success: true,
-                data: productosMock
-            }
-        );
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al obtener los productos',
-            error: error.message
-        });
-    }
-}
+  try {
+    const [rows] = await pool.query(`
+      SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, p.estado, c.nombre AS categoria
+      FROM productos p
+      INNER JOIN categorias c ON p.id_categoria = c.id_categoria
+      WHERE p.estado = 'Disponible'
+    `);
+
+    res.json({
+      success: true,
+      data: rows
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 export const getAlertas = async (req, res) => {
-    try {
-        const stockBajo = productosMock.filter(producto => producto.stock < 20);
-        const productosVencidos = productosMock.filter(producto => producto.dias_vencimiento < 5);
+  try {
+    const [stockBajo] = await pool.query(`
+      SELECT id_producto, nombre, stock, precio 
+      FROM productos 
+      WHERE stock <= 5 AND estado = 'Disponible'
+    `);
 
-        res.json({
-            success: true,
-            alertas: {
-                stockBajo,
-                productosVencidos
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al obtener las alertas',
-            error: error.message
-        });
+    res.json({
+      success: true,
+      alertas: {
+        stockBajo,
+        proximosAVencer: [] 
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const crearProducto = async (req, res) => {
+  try {
+    const { id_categoria, nombre, descripcion, precio, stock } = req.body;
+
+    if (!id_categoria || !nombre || precio === undefined || stock === undefined) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Por favor complete todos los campos obligatorios (categoría, nombre, precio, stock).' 
+      });
     }
-}
+
+    const [result] = await pool.query(
+      `INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, estado) 
+       VALUES (?, ?, ?, ?, ?, 'Disponible')`,
+      [id_categoria, nombre, descripcion || '', precio, stock]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Producto creado exitosamente.',
+      data: { id_producto: result.insertId, nombre, precio, stock }
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
