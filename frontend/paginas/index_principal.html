@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./frontend/diseños/css/estilos.css">
-    <title>Document</title>
-</head>
-<style>
-:root {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS Panadería - Dashboard</title>
+  <style>
+    :root {
       --sidebar-bg: #1e222d;
       --sidebar-text: #94a3b8;
-      --sidebar-active: #ffffff;
       --main-bg: #f4f6f9;
       --card-bg: #ffffff;
       --text-dark: #1e293b;
@@ -28,143 +25,186 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
     body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
 
-    aside {
-      width: 260px;
-      background-color: var(--sidebar-bg);
-      color: var(--sidebar-text);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-    aside .brand { color: #fff; font-size: 1.2rem; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+    /* SIDEBAR */
+    aside { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 20px; }
+    aside .brand { color: #fff; font-size: 1.2rem; font-weight: bold; margin-bottom: 30px; }
     aside .filter-group { margin-bottom: 20px; }
-    aside label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: bold; display: block; margin-bottom: 8px; }
-    aside input, aside select {
-      width: 100%;
-      padding: 10px;
-      background: #2a2e3d;
-      border: 1px solid #3b4252;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 0.9rem;
-    }
-    aside input::placeholder { color: #64748b; }
+    aside label { font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: bold; display: block; margin-bottom: 8px; }
+    aside input, aside select { width: 100%; padding: 10px; background: #2a2e3d; border: 1px solid #3b4252; border-radius: 6px; color: #fff; font-size: 0.9rem; }
 
+    /* MAIN */
     main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    header { background: var(--card-bg); height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+    header .nav-links a { text-decoration: none; color: var(--primary); font-weight: 600; border-bottom: 2px solid var(--primary); padding-bottom: 18px; }
 
-    header {
-      background: var(--card-bg);
-      height: 60px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
-    }
-    header .nav-links { display: flex; gap: 20px; font-weight: 500; font-size: 0.95rem; }
-    header .nav-links a { text-decoration: none; color: #64748b; padding-bottom: 18px; }
-    header .nav-links a.active { color: var(--primary); border-bottom: 2px solid var(--primary); font-weight: 600; }
-    header .user-profile { font-size: 0.9rem; color: #64748b; }
-    
-    .content { padding: 30px; display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+    .content { padding: 30px; display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 25px; }
+    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); margin-bottom: 20px; }
+    .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    /* TABLAS */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: #f8fafc; color: #64748b; font-weight: 600; padding: 10px; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.75rem; text-align: left; }
+    td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
 
-    .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 500; }
-
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-    th { background: #f8fafc; color: #64748b; font-weight: 600; padding: 12px; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.75rem; }
-    td { padding: 14px 12px; border-bottom: 1px solid var(--border); color: var(--text-dark); }
-    tr:hover { background-color: #f8fafc; }
-
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
     .badge-ok { background: var(--success-bg); color: var(--success-text); }
     .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
     .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
 
-
-    .pos-panel h3 { margin-bottom: 15px; font-size: 1.1rem; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #475569; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
-
-    </style>
+    /* FORMULARIOS */
+    .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+    
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+  </style>
+</head>
 <body>
-    <aside>
-    <div class="brand">Panadería: Por Tomas y Yerick</div>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="brand">🥐 Panadería POS</div>
     
     <div class="filter-group">
       <label>Buscar Producto</label>
-      <input type="text" id="search-input" placeholder="Nombre del producto..." oninput="filtrarProductos()">
+      <input type="text" id="search-input" placeholder="Nombre..." oninput="filtrarProductos()">
     </div>
 
     <div class="filter-group">
-      <label>Estado / Alerta</label>
+      <label>Estado / Alertas</label>
       <select id="filter-alert" onchange="filtrarProductos()">
         <option value="todos">Todos los productos</option>
-        <option value="critico">Stock Bajo</option>
-        <option value="vencer">Próximos a Vencer</option>
+        <option value="critico">⚠️ Stock Bajo</option>
       </select>
     </div>
   </aside>
 
+  <!-- MAIN CONTENT -->
   <main>
     <header>
       <div class="nav-links">
-        <a href="#" class="active">Productos & Inventario</a>
-        <a href="#">Reportes del Día</a>
+        <a href="#">Sistema POS & Inventario</a>
       </div>
-      <div class="user-profile">
-        <span>● Backend Conectado (Port 3000)</span>
+      <div>
+        <span style="color:#22c55e; font-size: 0.85rem; font-weight: 600;">● MySQL Conectado</span>
       </div>
     </header>
 
     <div class="content">
-      <div class="card">
-        <div class="actions-bar">
-          <h2 style="font-size:1.2rem;">Catálogo de Inventario</h2>
-          <button class="btn-secondary" onclick="cargarDatos()"> Actualizar Tabla</button>
+      <!-- COLUMNA IZQUIERDA: TABLAS -->
+      <div>
+        <!-- TABLA PRODUCTOS -->
+        <div class="card">
+          <div class="actions-bar">
+            <h3>📦 Catálogo de Productos</h3>
+            <button class="btn-secondary" onclick="cargarTodo()">🔄 Actualizar</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-body">
+              <tr><td colspan="5">Cargando productos...</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>NOMBRE</th>
-              <th>PRECIO</th>
-              <th>STOCK</th>
-              <th>ESTADO HOY</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-body">
-            <tr><td colspan="5">Cargando inventario desde Node.js...</td></tr>
-          </tbody>
-        </table>
+        <!-- TABLA HISTORIAL DE VENTAS -->
+        <div class="card">
+          <div class="actions-bar">
+            <h3>📜 Historial de Ventas</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th># Venta</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-ventas">
+              <tr><td colspan="4">Cargando ventas...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="card pos-panel">
-        <h3>Registrar Venta</h3>
-        <form onsubmit="procesarVenta(event)">
-          <div class="form-group">
-            <label>Método de Pago</label>
-            <select id="metodo_pago" required>
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia (Nequi/Daviplata)</option>
-            </select>
-          </div>
+      <!-- COLUMNA DERECHA: REGISTRO POS Y NUEVO PRODUCTO -->
+      <div>
+        <!-- PANEL POS -->
+        <div class="card">
+          <h3>🛒 Registrar Venta (POS)</h3>
+          <form onsubmit="procesarVenta(event)">
+            <div class="form-group">
+              <label>Seleccionar Producto</label>
+              <select id="pos_producto" onchange="actualizarTotalPOS()" required>
+                <option value="">Cargando productos...</option>
+              </select>
+            </div>
 
-          <div class="form-group">
-            <label>Monto Total ($)</label>
-            <input type="number" id="total_venta" value="8000" required>
-          </div>
+            <div class="form-group">
+              <label>Cantidad</label>
+              <input type="number" id="pos_cantidad" value="1" min="1" oninput="actualizarTotalPOS()" required>
+            </div>
 
-          <button type="submit" class="btn-primary" style="width: 100%;">Procesar Venta</button>
-        </form>
+            <div class="form-group">
+              <label>Método de Pago</label>
+              <select id="metodo_pago" required>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia (Nequi/Daviplata)</option>
+              </select>
+            </div>
 
-        <div id="venta-res" style="margin-top: 15px;"></div>
+            <div class="form-group">
+              <label>Monto Total ($)</label>
+              <input type="number" id="total_venta" readonly style="background:#f1f5f9; font-weight:bold;">
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">Procesar Venta</button>
+          </form>
+          <div id="venta-res" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- AGREGAR PRODUCTO -->
+        <div class="card">
+          <h3>➕ Agregar Producto</h3>
+          <form onsubmit="registrarProducto(event)">
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="prod_nombre" required>
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="prod_categoria" required>
+                <option value="1">Panadería</option>
+                <option value="2">Repostería</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Precio ($)</label>
+              <input type="number" id="prod_precio" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+              <label>Stock Inicial</label>
+              <input type="number" id="prod_stock" required>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">Guardar Producto</button>
+          </form>
+          <div id="prod-res" style="margin-top: 10px;"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -172,9 +212,14 @@
   <script>
     const API_URL = 'http://localhost:3000/api';
     let productosCache = [];
-    let alertasCache = { stockBajo: [], proximosAVencer: [] };
+    let alertasCache = { stockBajo: [] };
 
-    async function cargarDatos() {
+    async function cargarTodo() {
+      await cargarProductos();
+      await cargarVentas();
+    }
+
+    async function cargarProductos() {
       try {
         const resProd = await fetch(`${API_URL}/productos`);
         const jsonProd = await resProd.json();
@@ -184,39 +229,154 @@
         const jsonAlert = await resAlert.json();
         alertasCache = jsonAlert.alertas;
 
-        renderTabla(productosCache);
+        renderTablaProductos(productosCache);
+        poblarSelectorProductos();
       } catch (err) {
         document.getElementById('tabla-body').innerHTML = `<tr><td colspan="5" style="color:red;">Error al conectar con la API</td></tr>`;
       }
     }
 
-    function renderTabla(lista) {
+    function renderTablaProductos(lista) {
       const tbody = document.getElementById('tabla-body');
       tbody.innerHTML = '';
 
       if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5">No se encontraron productos.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5">No hay productos disponibles.</td></tr>`;
         return;
       }
 
       lista.forEach(p => {
-        const esBajo = alertasCache.stockBajo.some(a => a.id === p.id);
-        const esVencer = alertasCache.proximosAVencer.some(a => a.id === p.id);
-
-        let badge = '<span class="badge badge-ok">Normal</span>';
-        if (esBajo) badge = '<span class="badge badge-danger">Stock Bajo</span>';
-        else if (esVencer) badge = '<span class="badge badge-warning">Próximo a Vencer</span>';
+        const esBajo = alertasCache.stockBajo.some(a => a.id_producto === p.id_producto);
+        let badge = esBajo ? '<span class="badge badge-danger">Stock Bajo</span>' : '<span class="badge badge-ok">Normal</span>';
 
         tbody.innerHTML += `
           <tr>
-            <td>#00${p.id}</td>
+            <td>#00${p.id_producto}</td>
             <td><strong>${p.nombre}</strong></td>
-            <td>$${p.precio.toLocaleString()}</td>
+            <td>$${Number(p.precio).toLocaleString()}</td>
             <td>${p.stock} un.</td>
             <td>${badge}</td>
           </tr>
         `;
       });
+    }
+
+    function poblarSelectorProductos() {
+      const select = document.getElementById('pos_producto');
+      select.innerHTML = '<option value="">Seleccione un producto...</option>';
+
+      productosCache.forEach(p => {
+        select.innerHTML += `<option value="${p.id_producto}" data-precio="${p.precio}">${p.nombre} - $${Number(p.precio).toLocaleString()} (Stock: ${p.stock})</option>`;
+      });
+
+      actualizarTotalPOS();
+    }
+
+    function actualizarTotalPOS() {
+      const select = document.getElementById('pos_producto');
+      const cantidad = Number(document.getElementById('pos_cantidad').value) || 0;
+      const selectedOption = select.options[select.selectedIndex];
+
+      if (selectedOption && selectedOption.dataset.precio) {
+        const precioUnitario = Number(selectedOption.dataset.precio);
+        document.getElementById('total_venta').value = precioUnitario * cantidad;
+      } else {
+        document.getElementById('total_venta').value = 0;
+      }
+    }
+
+    async function procesarVenta(e) {
+      e.preventDefault();
+      const id_producto = Number(document.getElementById('pos_producto').value);
+      const cantidad = Number(document.getElementById('pos_cantidad').value);
+      const select = document.getElementById('pos_producto');
+      const selectedOption = select.options[select.selectedIndex];
+
+      if (!id_producto) {
+        alert('Por favor selecciona un producto.');
+        return;
+      }
+
+      const precio_unitario = Number(selectedOption.dataset.precio);
+
+      try {
+        const res = await fetch(`${API_URL}/ventas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id_cliente: 1,
+            id_usuario: 1,
+            items: [{ id_producto, cantidad, precio_unitario }]
+          })
+        });
+
+        const data = await res.json();
+        const resDiv = document.getElementById('venta-res');
+
+        if (data.success) {
+          resDiv.innerHTML = `<div style="padding:8px; background:var(--success-bg); color:var(--success-text); border-radius:6px; font-size:0.85rem;">✅ Venta #${data.data.id_venta} registrada correctamente</div>`;
+          cargarTodo();
+        } else {
+          resDiv.innerHTML = `<div style="padding:8px; background:var(--danger-bg); color:var(--danger-text); border-radius:6px; font-size:0.85rem;">❌ ${data.message}</div>`;
+        }
+      } catch (err) {
+        alert('Error conectando con la API de ventas');
+      }
+    }
+
+    async function cargarVentas() {
+      try {
+        const res = await fetch(`${API_URL}/ventas`);
+        const data = await res.json();
+        const tbody = document.getElementById('tabla-ventas');
+        tbody.innerHTML = '';
+
+        if (!data.data || data.data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4">No se han registrado ventas hoy.</td></tr>`;
+          return;
+        }
+
+        data.data.forEach(v => {
+          const fecha = new Date(v.fecha_venta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          tbody.innerHTML += `
+            <tr>
+              <td>#00${v.id_venta}</td>
+              <td>${fecha}</td>
+              <td><strong>$${Number(v.total).toLocaleString()}</strong></td>
+              <td><span class="badge badge-ok">${v.estado}</span></td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        document.getElementById('tabla-ventas').innerHTML = `<tr><td colspan="4" style="color:red;">Error cargando historial</td></tr>`;
+      }
+    }
+
+    async function registrarProducto(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('prod_nombre').value;
+      const id_categoria = Number(document.getElementById('prod_categoria').value);
+      const precio = Number(document.getElementById('prod_precio').value);
+      const stock = Number(document.getElementById('prod_stock').value);
+
+      try {
+        const res = await fetch(`${API_URL}/productos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, id_categoria, precio, stock })
+        });
+
+        const data = await res.json();
+        const resDiv = document.getElementById('prod-res');
+
+        if (data.success) {
+          resDiv.innerHTML = `<div style="padding:8px; background:var(--success-bg); color:var(--success-text); border-radius:6px; font-size:0.85rem;">✅ ${data.message}</div>`;
+          e.target.reset();
+          cargarTodo();
+        }
+      } catch (err) {
+        alert('Error al crear producto');
+      }
     }
 
     function filtrarProductos() {
@@ -226,44 +386,14 @@
       let resultado = productosCache.filter(p => p.nombre.toLowerCase().includes(texto));
 
       if (filtroAlerta === 'critico') {
-        resultado = resultado.filter(p => alertasCache.stockBajo.some(a => a.id === p.id));
-      } else if (filtroAlerta === 'vencer') {
-        resultado = resultado.filter(p => alertasCache.proximosAVencer.some(a => a.id === p.id));
+        resultado = resultado.filter(p => alertasCache.stockBajo.some(a => a.id_producto === p.id_producto));
       }
 
-      renderTabla(resultado);
+      renderTablaProductos(resultado);
     }
 
-    async function procesarVenta(e) {
-      e.preventDefault();
-      const metodo_pago = document.getElementById('metodo_pago').value;
-      const total = Number(document.getElementById('total_venta').value);
-
-      try {
-        const res = await fetch(`${API_URL}/ventas`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            metodo_pago,
-            total,
-            items: [{ id_producto: 1, cantidad: 2, precio_unitario: 2000 }]
-          })
-        });
-
-        const data = await res.json();
-        const resDiv = document.getElementById('venta-res');
-
-        if (data.success) {
-          resDiv.innerHTML = `<div style="padding:10px; background:var(--success-bg); color:var(--success-text); border-radius:6px; font-size:0.85rem;">✅ ${data.message} (ID Venta: ${data.data.id_venta})</div>`;
-        }
-      } catch (err) {
-        alert('Error conectando con la API');
-      }
-    }
-
-    cargarDatos();
+    // Inicializar
+    cargarTodo();
   </script>
-</body>
-</html>
 </body>
 </html>
