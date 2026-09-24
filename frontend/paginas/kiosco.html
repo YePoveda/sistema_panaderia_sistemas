@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+      <link rel="stylesheet" href="./frontend/diseños/estiloKiosco.css" />
+</head>
+<body>
+<div class="kiosk-frame">
+    
+    <div id="pantalla-1">
+      <div class="header">
+        <h1>¿Qué te gustaría ordenar hoy?</h1>
+        <p>Toca cualquiera de los productos para agregarlo a tu orden</p>
+      </div>
+
+      <div class="category-section">
+        <div class="category-title">Comidas</div>
+        <div class="products-grid" id="grid-comidas">
+        </div>
+      </div>
+
+      <div class="category-section">
+        <div class="category-title">Bebidas</div>
+        <div class="products-grid" id="grid-bebidas">
+
+        </div>
+      </div>
+
+      <button class="btn-floating" onclick="irAConfirmacion()">
+        Ver mi Orden (<span id="total-items">0</span> productos) ➔
+      </button>
+    </div>
+
+    <div id="pantalla-2" class="hidden">
+      <div class="header">
+        <h1>Resumen de tu Pedido</h1>
+        <p>Confirma los productos seleccionados antes de realizar el pago</p>
+      </div>
+
+      <div class="summary-card">
+        <div id="summary-items-list">
+
+        </div>
+        <div class="summary-total">
+          <span>Total a pagar:</span>
+          <span id="summary-total-price">$ 0</span>
+        </div>
+      </div>
+
+      <div class="header" style="margin-bottom: 20px;">
+        <h2 style="font-size: 1.4rem;">Selecciona tu método de pago</h2>
+      </div>
+
+      <div class="payment-options">
+        <button class="btn-payment" onclick="procesarOrdenBD('Efectivo')">EFECTIVO</button>
+        <button class="btn-payment" onclick="procesarOrdenBD('Transferencia')">TRANSFERENCIA<br><small style="font-weight:normal; font-size:0.85rem; color:var(--text-muted);">NEQUI / DAVIPLATA</small></button>
+      </div>
+
+      <p style="text-align: center; margin-top: 30px;">
+        <a href="#" onclick="volverAlMenu()" style="color: var(--text-muted); text-decoration: underline;">← Volver al menú para modificar pedido</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+  const API_URL = 'http://localhost:3000/api';
+  let carrito = [];
+  let productosBD = [];
+
+function obtenerRutaImagen(nombre) {
+  if (!nombre) return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400';
+  const n = nombre.toLowerCase();
+  
+  if (n.includes('aliñado') || n.includes('alinado')) return './img/panAlinado.jpg';
+  if (n.includes('bono')) return './img/panBono.jpg';
+  if (n.includes('mantecada')) return './img/mantecada.jpg';
+  if (n.includes('almojabana') || n.includes('almojábana')) return './img/almojabana.jpg';
+  if (n.includes('brazo')) return './img/brazoReina.jpg';
+  if (n.includes('cafe') || n.includes('tinto') || n.includes('café')) return './img/cafe.jpg';
+  if (n.includes('aromatica') || n.includes('aromática')) return './img/aromatica.jpg';
+  if (n.includes('lulada')) return './img/lulada.jpg';
+  
+  return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400';
+}
+
+function renderizarGrilla() {
+  const gridComidas = document.getElementById('grid-comidas');
+  const gridBebidas = document.getElementById('grid-bebidas');
+  
+  gridComidas.innerHTML = '';
+  gridBebidas.innerHTML = '';
+
+  productosBD.forEach((p, index) => {
+    if (p.stock <= 0) return;
+
+    const imgPath = obtenerRutaImagen(p.nombre);
+    const cardHtml = `
+      <div class="product-card" id="card-prod-${p.id_producto}" onclick="agregarAlCarrito(${p.id_producto})">
+        <div class="badge-qty hidden" id="badge-prod-${p.id_producto}">0</div>
+        <img class="product-img" src="${imgPath}" alt="${p.nombre}">
+        <div class="product-info">
+          <h3>${p.nombre}</h3>
+          <div class="price">$ ${Number(p.precio).toLocaleString()}</div>
+        </div>
+      </div>
+    `;
+
+    const catName = (p.categoria || '').toLowerCase();
+    const nombreProd = (p.nombre || '').toLowerCase();
+
+    const esBebida = catName.includes('bebida') || 
+                     nombreProd.includes('café') || 
+                     nombreProd.includes('cafe') || 
+                     nombreProd.includes('tinto') || 
+                     nombreProd.includes('aromatica') || 
+                     nombreProd.includes('aromática') || 
+                     nombreProd.includes('lulada') ||
+                     index >= 3; 
+
+    if (esBebida) {
+      gridBebidas.innerHTML += cardHtml;
+    } else {
+      gridComidas.innerHTML += cardHtml;
+    }
+  });
+}
+
+  async function cargarCatalogo() {
+    try {
+      const res = await fetch(`${API_URL}/productos`);
+      const json = await res.json();
+      productosBD = json.data || [];
+    } catch (err) {
+      console.warn('Servidor local no detectado, usando datos de respaldo...');
+      productosBD = [
+        { id_producto: 1, nombre: 'Pan de Bono', precio: 1500, stock: 10, categoria: 'Panadería' },
+        { id_producto: 2, nombre: 'Mantecada', precio: 3500, stock: 10, categoria: 'Repostería' },
+        { id_producto: 3, nombre: 'Almojábana', precio: 3000, stock: 10, categoria: 'Panadería' },
+        { id_producto: 4, nombre: 'Café / Tinto', precio: 3000, stock: 10, categoria: 'Bebidas' },
+        { id_producto: 5, nombre: 'Aromática', precio: 4000, stock: 10, categoria: 'Bebidas' },
+        { id_producto: 6, nombre: 'Lulada', precio: 3800, stock: 10, categoria: 'Bebidas' }
+      ];
+    }
+
+    renderizarGrilla();
+  }
+
+  function renderizarGrilla() {
+    const gridComidas = document.getElementById('grid-comidas');
+    const gridBebidas = document.getElementById('grid-bebidas');
+    gridComidas.innerHTML = '';
+    gridBebidas.innerHTML = '';
+
+    productosBD.forEach(p => {
+      if (p.stock <= 0) return;
+
+      const imgPath = obtenerRutaImagen(p.nombre);
+      const cardHtml = `
+        <div class="product-card" id="card-prod-${p.id_producto}" onclick="agregarAlCarrito(${p.id_producto})">
+          <div class="badge-qty hidden" id="badge-prod-${p.id_producto}">0</div>
+          <img class="product-img" src="${imgPath}" alt="${p.nombre}" onerror="this.src='./img/pandebono.jpg'">
+          <div class="product-info">
+            <h3>${p.nombre}</h3>
+            <div class="price">$ ${Number(p.precio).toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+
+      const catName = (p.categoria || '').toLowerCase();
+      const nombreProd = (p.nombre || '').toLowerCase();
+
+      // Clasificación precisa para Comidas y Bebidas
+      if (catName.includes('bebida') || nombreProd.includes('café') || nombreProd.includes('cafe') || nombreProd.includes('aromatica') || nombreProd.includes('lulada')) {
+        gridBebidas.innerHTML += cardHtml;
+      } else {
+        gridComidas.innerHTML += cardHtml;
+      }
+    });
+  }
+
+  function agregarAlCarrito(id_producto) {
+    const prod = productosBD.find(p => p.id_producto === id_producto);
+    if (!prod) return;
+
+    let enCarrito = carrito.find(c => c.id_producto === id_producto);
+    if (enCarrito) {
+      enCarrito.cantidad += 1;
+    } else {
+      enCarrito = { id_producto: prod.id_producto, nombre: prod.nombre, precio: prod.precio, cantidad: 1 };
+      carrito.push(enCarrito);
+    }
+
+    const badge = document.getElementById(`badge-prod-${id_producto}`);
+    if (badge) {
+      badge.textContent = enCarrito.cantidad;
+      badge.classList.remove('hidden');
+    }
+
+    actualizarContadorBoton();
+  }
+
+  function actualizarContadorBoton() {
+    const totalCount = carrito.reduce((acc, i) => acc + i.cantidad, 0);
+    document.getElementById('total-items').textContent = totalCount;
+  }
+
+  function irAConfirmacion() {
+    if (carrito.length === 0) {
+      alert('Por favor selecciona al menos un producto haciendo clic sobre él.');
+      return;
+    }
+
+    const listContainer = document.getElementById('summary-items-list');
+    listContainer.innerHTML = '';
+    let total = 0;
+
+    carrito.forEach(item => {
+      const subtotal = item.precio * item.cantidad;
+      total += subtotal;
+      listContainer.innerHTML += `
+        <div class="summary-item">
+          <span>${item.cantidad}x ${item.nombre}</span>
+          <strong>$ ${subtotal.toLocaleString()}</strong>
+        </div>
+      `;
+    });
+
+    document.getElementById('summary-total-price').textContent = `$ ${total.toLocaleString()}`;
+    document.getElementById('pantalla-1').classList.add('hidden');
+    document.getElementById('pantalla-2').classList.remove('hidden');
+  }
+
+  function volverAlMenu() {
+    document.getElementById('pantalla-2').classList.add('hidden');
+    document.getElementById('pantalla-1').classList.remove('hidden');
+  }
+
+  async function procesarOrdenBD(metodo) {
+    try {
+      const items = carrito.map(i => ({
+        id_producto: i.id_producto,
+        cantidad: i.cantidad,
+        precio_unitario: i.precio
+      }));
+
+      const res = await fetch(`${API_URL}/ventas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_cliente: 1, id_usuario: 1, items })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`¡Orden #${data.data.id_venta} confirmada con pago en ${metodo}!`);
+        
+        carrito = [];
+        actualizarContadorBoton();
+        
+        document.querySelectorAll('.badge-qty').forEach(b => {
+          b.textContent = '0';
+          b.classList.add('hidden');
+        });
+
+        volverAlMenu();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (err) {
+      alert('Error al procesar la orden con el servidor.');
+    }
+  }
+
+  cargarCatalogo();
+</script>
+
+</body>
+</html>
