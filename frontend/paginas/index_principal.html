@@ -4,58 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POS Panadería - Dashboard</title>
-  <style>
-    :root {
-      --sidebar-bg: #1e222d;
-      --sidebar-text: #94a3b8;
-      --main-bg: #f4f6f9;
-      --card-bg: #ffffff;
-      --text-dark: #1e293b;
-      --primary: #ec4899;
-      --primary-hover: #db2777;
-      --border: #e2e8f0;
-      --success-bg: #dcfce7;
-      --success-text: #15803d;
-      --danger-bg: #fee2e2;
-      --danger-text: #ef4444;
-      --warning-bg: #fef3c7;
-      --warning-text: #b45309;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { display: flex; height: 100vh; background-color: var(--main-bg); color: var(--text-dark); overflow: hidden; }
-
-    aside { width: 260px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 20px; }
-    aside .brand { color: #fff; font-size: 1.2rem; font-weight: bold; margin-bottom: 30px; }
-    aside .filter-group { margin-bottom: 20px; }
-    aside label { font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: bold; display: block; margin-bottom: 8px; }
-    aside input, aside select { width: 100%; padding: 10px; background: #2a2e3d; border: 1px solid #3b4252; border-radius: 6px; color: #fff; font-size: 0.9rem; }
-
-    main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-    header { background: var(--card-bg); height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
-    header .nav-links a { text-decoration: none; color: var(--primary); font-weight: 600; border-bottom: 2px solid var(--primary); padding-bottom: 18px; }
-
-    .content { padding: 30px; display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 25px; }
-    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); margin-bottom: 20px; }
-    .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th { background: #f8fafc; color: #64748b; font-weight: 600; padding: 10px; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.75rem; text-align: left; }
-    td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
-
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-    .badge-ok { background: var(--success-bg); color: var(--success-text); }
-    .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
-    .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
-
-    .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-    
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #475569; }
-    .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
-  </style>
+  <link rel="stylesheet" href="./frontend/diseños/estilos.css" />
 </head>
 <body>
 
