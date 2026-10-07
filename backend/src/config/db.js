@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const pool = mysql.createPool({
-    host:process.env.DB_HOST || 'Localhost',
+    host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'Luciana2026@',
     database: process.env.DB_NAME || 'inventario_panaderia',
@@ -21,4 +21,3 @@ pool.getConnection()
   .catch(err => {
     console.error('❌ Error al conectar a MySQL:', err.message);
   });
-  
