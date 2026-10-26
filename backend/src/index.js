@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { pool } from './config/db.js';
 import rutaProductos from './rutas/rutaProductos.js';
 import rutaVentas from './rutas/rutaVentas.js';
@@ -13,16 +15,31 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json()); 
 
+// Middleware para evitar la pantalla de advertencia de Ngrok
+app.use((req, res, next) => {
+  res.setHeader('ngrok-skip-browser-warning', 'true');
+  next();
+});
+
+// ==========================================
+// CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS
+// ==========================================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Apunta a la subcarpeta 'paginas' dentro de 'frontend'
+const rutaFrontend = path.resolve(__dirname, '../../frontend/paginas');
+
+console.log('📂 Sirviendo páginas desde:', rutaFrontend);
+
+app.use(express.static(rutaFrontend));
+
 // ==========================================
 // 1. RUTAS DE LA API
 // ==========================================
 
 app.use('/api/productos', rutaProductos);
 app.use('/api/ventas', rutaVentas); 
-
-app.get('/', (req, res) => {
-    res.send('Prueba Panaderia ');
-});
 
 // Endpoint de Login
 app.post('/api/login', async (req, res) => {
@@ -67,7 +84,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Endpoint de Registro exclusivo para Clientes (id_rol = 2)
+// Endpoint de Registro (Cliente id_rol = 2)
 app.post('/api/registro', async (req, res) => {
   const { nombre, apellido, documento, correo, telefono, contraseña } = req.body || {};
 
@@ -76,7 +93,6 @@ app.post('/api/registro', async (req, res) => {
   }
 
   try {
-    // Verificar si el correo o documento ya están registrados
     const [existentes] = await pool.query(
       'SELECT id_usuario FROM usuarios WHERE correo = ? OR documento = ?',
       [correo, documento]
@@ -89,7 +105,6 @@ app.post('/api/registro', async (req, res) => {
       });
     }
 
-    // Insertar nuevo usuario forzando id_rol = 2 (Cliente) y estado 'Activo'
     const ID_ROL_CLIENTE = 2;
 
     const queryInsert = `
@@ -121,8 +136,13 @@ app.post('/api/registro', async (req, res) => {
   }
 });
 
+// Redirección automática a la vista de login al ingresar a la raíz
+app.get('/', (req, res) => {
+    res.redirect('/login.html');
+});
+
 // ==========================================
-// 2. ENCENDER SERVIDOR SIEMPRE AL FINAL
+// 2. ENCENDER SERVIDOR
 // ==========================================
 
 app.listen(PORT, () => {
